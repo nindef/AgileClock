@@ -85,7 +85,7 @@ void MainDialog::mouseMoveEvent(QMouseEvent * event)
 
 void MainDialog::mouseReleaseEvent(QMouseEvent * event)
 {
-    if(event->button() == Qt::RightButton) return;
+    if(event->button() != Qt::LeftButton) return;
     if(acumDespl.manhattanLength() < 3 && mbTimerOn)
     {
         emit signalResetClock(true);
@@ -95,6 +95,7 @@ void MainDialog::mouseReleaseEvent(QMouseEvent * event)
 
 void MainDialog::mouseDoubleClickEvent(QMouseEvent * event)
 {
+    if(event->button() != Qt::LeftButton) return;
     emit signalResetClock(false);
     mbTimerOn = false;
 }
@@ -202,7 +203,7 @@ void MainFrame::secLess()
     mpMinutes->setText(QString::number (mins).rightJustified(2,QChar('0')));
     mpSeconds->setText(QString::number (secs).rightJustified(2,QChar('0')));
 
-    if(mins == 0 && secs == 4) QSound::play(":/sounds/resources/Metronome.wav");
+    if(mins == 0 && secs == 4 && !mbTimeout) QSound::play(":/sounds/resources/Metronome.wav");
     else if (mins == 0 && secs == 0) QSound::play(":/sounds/resources/AirHorn-mike_koenig.wav");
 
     if(miColorInterval < 5)

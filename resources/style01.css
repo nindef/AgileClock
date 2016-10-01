@@ -1,0 +1,12 @@
+
+MainDialog{
+    background: #FFFFFF;
+
+    border: 2px solid #AAAAAA;
+    border-radius: 10px;
+}
+
+QLabel#timeLabel{
+    font: bold 120pt "Ubuntu Mono";
+    color: #88FF88;
+}

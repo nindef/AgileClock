@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/styles">
+        <file>resources/style01.css</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>resources/img_close.png</file>
+    </qresource>
+    <qresource prefix="/fonts">
+        <file>resources/UbuntuMono-B.ttf</file>
+    </qresource>
+</RCC>

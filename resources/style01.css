@@ -1,12 +1,20 @@
 
-MainDialog{
-    background: #FFFFFF;
+MainFrame{
+    background: #F3F3F3;
 
-    border: 2px solid #AAAAAA;
+    border: 2px solid #DDDDDD;
     border-radius: 10px;
 }
 
 QLabel#timeLabel{
     font: bold 120pt "Ubuntu Mono";
     color: #88FF88;
+}
+
+QPushButton#closeButton{
+    background: #DDDDDD;
+    padding: 5px;
+    border: 1px solid #DDDDDD;
+    border-top-left-radius:5px;
+    border-top-right-radius:5px;
 }

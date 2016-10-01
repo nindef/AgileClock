@@ -24,24 +24,15 @@ public:
     ~MainDialog();
 
 protected:
-    void wheelEvent(QWheelEvent * event);
     void mousePressEvent(QMouseEvent * event);
     void mouseMoveEvent(QMouseEvent * event);
     void mouseReleaseEvent(QMouseEvent * event);
-    void mouseDoubleClickEvent(QMouseEvent * event);
 
-private slots:
-    void secLess();
-    void resetClock(bool lbTimerActive);
+signals:
+    void signalResetClock(bool);
 
 private:
-    QTimer *mpTimer;
-    QLabel *mpMinutes, *mpSeconds, *separator;
-    QFrame *mpMinFrame, *mpSecFrame;
     QPoint oldPosition, acumDespl;
-    int miMinutes, miSeconds;
-    bool mbTimerOn = false, mbTimeout = false;
-    int R = 25, G = 170, B = 25;
 };
 
 
@@ -57,6 +48,32 @@ public:
         mainDlg->show();
     }
     ~MainWindow() {}
+};
+
+class MainFrame : public QFrame
+{
+    Q_OBJECT
+
+public:
+    MainFrame(QWidget* parent = 0);
+
+protected:
+    void wheelEvent(QWheelEvent * event);
+    void mouseDoubleClickEvent(QMouseEvent * event);
+
+public slots:
+    void resetClock(bool lbTimerActive);
+
+private slots:
+    void secLess();
+
+private:
+    QTimer *mpTimer;
+    QLabel *mpMinutes, *mpSeconds, *separator;
+    QFrame *mpMinFrame, *mpSecFrame;
+    int miMinutes, miSeconds;
+    bool mbTimerOn = false, mbTimeout = false;
+    int R = 25, G = 170, B = 25;
 };
 
 #endif // MAINDIALOG_H

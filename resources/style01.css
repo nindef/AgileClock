@@ -1,15 +1,26 @@
 
 MainFrame{
     background: #F3F3F3;
-
     border: 2px solid #DDDDDD;
     border-radius: 10px;
 }
 
-QLabel#timeLabel{
-    font: bold 120pt "Ubuntu Mono";
-    color: #88FF88;
-}
+QLabel[ColorInterval="0"]{ color: #19AA19; }
+QLabel[ColorInterval="1"]{ color: #368D19; }
+QLabel[ColorInterval="2"]{ color: #537019; }
+QLabel[ColorInterval="3"]{ color: #705319; }
+QLabel[ColorInterval="4"]{ color: #8D3619; }
+QLabel[ColorInterval="5"]{ color: #AA1919; }
+
+QLabel[FontSize="0"]{ font-size: 40pt; }
+QLabel[FontSize="1"]{ font-size: 60pt; }
+QLabel[FontSize="2"]{ font-size: 80pt; }
+QLabel[FontSize="3"]{ font-size: 100pt; }
+QLabel[FontSize="4"]{ font-size: 120pt; }
+QLabel[FontSize="5"]{ font-size: 140pt; }
+QLabel[FontSize="6"]{ font-size: 160pt; }
+QLabel[FontSize="7"]{ font-size: 180pt; }
+QLabel[FontSize="8"]{ font-size: 200pt; }
 
 QPushButton#closeButton{
     background: #DDDDDD;

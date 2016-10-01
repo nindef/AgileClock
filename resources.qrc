@@ -8,4 +8,8 @@
     <qresource prefix="/fonts">
         <file>resources/UbuntuMono-B.ttf</file>
     </qresource>
+    <qresource prefix="/sounds">
+        <file>resources/AirHorn-mike_koenig.wav</file>
+        <file>resources/Metronome.wav</file>
+    </qresource>
 </RCC>

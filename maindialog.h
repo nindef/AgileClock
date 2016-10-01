@@ -9,11 +9,11 @@
 #include <QMouseEvent>
 #include <QResizeEvent>
 #include <QPoint>
+#include <QSound>
 
 class QTimer;
 class QLabel;
 class QFrame;
-
 
 class MainDialog : public QDialog
 {
@@ -27,12 +27,14 @@ protected:
     void mousePressEvent(QMouseEvent * event);
     void mouseMoveEvent(QMouseEvent * event);
     void mouseReleaseEvent(QMouseEvent * event);
+    void mouseDoubleClickEvent(QMouseEvent * event);
 
 signals:
     void signalResetClock(bool);
 
 private:
     QPoint oldPosition, acumDespl;
+    bool mbTimerOn = false;
 };
 
 
@@ -59,7 +61,6 @@ public:
 
 protected:
     void wheelEvent(QWheelEvent * event);
-    void mouseDoubleClickEvent(QMouseEvent * event);
 
 public slots:
     void resetClock(bool lbTimerActive);
@@ -71,9 +72,13 @@ private:
     QTimer *mpTimer;
     QLabel *mpMinutes, *mpSeconds, *separator;
     QFrame *mpMinFrame, *mpSecFrame;
-    int miMinutes, miSeconds;
+    int miMinutes, miSeconds, miFontSize;
     bool mbTimerOn = false, mbTimeout = false;
-    int R = 25, G = 170, B = 25;
+    QFont moTimeFont;
+    int miColorInterval = 0, miFontSizeInterval = 4;
+    qreal mfColorIntervalJump = 0;
+//    QSound *mpLast5Sound, *mpTimeoutSound;
+//    QSound moSoundPlayer;
 };
 
 #endif // MAINDIALOG_H

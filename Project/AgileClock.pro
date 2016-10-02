@@ -23,3 +23,5 @@ RESOURCES += \
     resources.qrc
 
 DISTFILES +=
+
+RC_ICONS = appicon.ico

@@ -2,7 +2,6 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QFrame>
 #include <QTimer>
 #include <QFont>
 #include <QPainter>
@@ -11,8 +10,11 @@
 #include <QPalette>
 #include <QBrush>
 #include <QStyle>
-#include <QtSvg/QSvgRenderer>
 #include <QGraphicsDropShadowEffect>
+#include <QSound>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QSettings>
 
 #include <stdio.h>
 
@@ -55,11 +57,25 @@ MainDialog::MainDialog(QWidget *parent)
     lpGlobalLay->addWidget(lpMainFrame,2,1,1,1,Qt::AlignRight);
 
     setLayout(lpGlobalLay);
+
+    msSettingsPath = QApplication::applicationDirPath() + "/config.ini";
 }
 
 MainDialog::~MainDialog()
 {
+    //save current settings
+    QRect geom = geometry();
 
+    QSettings settings(msSettingsPath, QSettings::IniFormat);
+    settings.setValue("lastPos", geom.topLeft());
+}
+
+void MainDialog::showEvent(QShowEvent *event)
+{
+    QPoint center = QApplication::desktop()->screen()->rect().center() - rect().center();
+    QSettings settings(msSettingsPath, QSettings::IniFormat);
+    QPoint lastPos = settings.value("lastPos", center).toPoint();
+    move(lastPos);
 }
 
 void MainDialog::mousePressEvent(QMouseEvent * event)
@@ -108,9 +124,7 @@ MainFrame::MainFrame(QWidget* parent):QFrame(parent)
 {
     setContentsMargins(0,0,0,0);
 
-    miMinutes = 2, miSeconds = 0;
-
-    moTimeFont.setFamily("Ubuntu Mono");
+    loadSettings();
 
     QHBoxLayout *lpGlobalHLay = new QHBoxLayout;
     lpGlobalHLay->setContentsMargins(0,0,0,0);
@@ -157,10 +171,6 @@ MainFrame::MainFrame(QWidget* parent):QFrame(parent)
     separator->setObjectName("timeLabel");
     separator->setGraphicsEffect (sepEffect);
 
-    mpMinutes->setFont(moTimeFont);
-    mpSeconds->setFont(moTimeFont);
-    separator->setFont(moTimeFont);
-
     mpMinutes->setProperty("ColorInterval", miColorInterval);
     mpSeconds->setProperty("ColorInterval", miColorInterval);
     separator->setProperty("ColorInterval", miColorInterval);
@@ -178,6 +188,37 @@ MainFrame::MainFrame(QWidget* parent):QFrame(parent)
     connect(mpTimer, SIGNAL(timeout()), this, SLOT(secLess()));
 
     setLayout(lpGlobalHLay);
+}
+
+MainFrame::~MainFrame()
+{
+    saveSettings();
+}
+
+void MainFrame::loadSettings()
+{
+    msSettingsPath = QApplication::applicationDirPath() + "/config.ini";
+    QSettings settings (msSettingsPath, QSettings::IniFormat);
+
+    miMinutes = settings.value("minutes", 2).toInt();
+    miSeconds = settings.value("seconds", 0).toInt();
+
+    miFontSizeInterval = settings.value("sizefont", 4).toInt();
+}
+
+void MainFrame::saveSettings()
+{
+    msSettingsPath = QApplication::applicationDirPath() + "/config.ini";
+
+    QFile settingsFile (msSettingsPath);
+    if(!settingsFile.exists()) settingsFile.open(QFile::ReadWrite);
+
+    QSettings settings (msSettingsPath, QSettings::IniFormat);
+
+    settings.setValue("minutes", miMinutes);
+    settings.setValue("seconds", miSeconds);
+
+    settings.setValue("sizefont", miFontSizeInterval);
 }
 
 
@@ -206,7 +247,7 @@ void MainFrame::secLess()
     if(mins == 0 && secs == 4 && !mbTimeout) QSound::play(":/sounds/resources/Metronome.wav");
     else if (mins == 0 && secs == 0) QSound::play(":/sounds/resources/AirHorn-mike_koenig.wav");
 
-    if(miColorInterval < 5)
+    if(miColorInterval < 9)
     {
         int liOldInterval = miColorInterval;
         miColorInterval = (miMinutes * 60 - mins * 60 + miSeconds - secs) / mfColorIntervalJump;
@@ -283,7 +324,7 @@ void MainFrame::resetClock(bool lbTimerActive)
     mpMinutes->setText(QString::number (miMinutes).rightJustified(2,QChar('0')));
     mpSeconds->setText(QString::number (miSeconds).rightJustified(2,QChar('0')));
 
-    mfColorIntervalJump = (qreal)(miMinutes * 60 + miSeconds) / 5.0;
+    mfColorIntervalJump = (qreal)(miMinutes * 60 + miSeconds) / 10.0;
     miColorInterval = 0;
     mpMinutes->setProperty("ColorInterval", miColorInterval);
     mpSeconds->setProperty("ColorInterval", miColorInterval);

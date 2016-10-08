@@ -8,10 +8,9 @@
 #include <QMouseEvent>
 #include <QResizeEvent>
 #include <QPoint>
-
-class QTimer;
-class QLabel;
-class QFrame;
+#include <QLabel>
+#include <QTimer>
+#include <QApplication>
 
 class MainDialog : public QDialog
 {
@@ -74,14 +73,26 @@ private slots:
     void secLess();
 
 private:
-    QTimer *mpTimer;
-    QLabel *mpMinutes, *mpSeconds, *separator;
-    QFrame *mpMinFrame, *mpSecFrame;
-    int miMinutes, miSeconds, miFontSize;
-    bool mbTimerOn = false, mbTimeout = false;
-    int miColorInterval = 0, miFontSizeInterval;
+    static const int Alert = 10;
+    static const int Warning = 25;
+    static const int Timeout = 0;
+    bool mbIntervalChanged = true;
+    QTimer *mpTimer = new QTimer(this);
+    QLabel *mpSign = new QLabel("+", this);
+    QLabel *mpMinutes = new QLabel(this);
+    QLabel *mpSeconds = new QLabel(this);
+    QLabel *mpSeparator = new QLabel(":",this);
+    QFrame *mpMinFrame = new QFrame(this);
+    QFrame *mpSecFrame = new QFrame(this);
+    int miMinutes = 0;
+    int miSeconds = 0;
+    int miFontSize = 0;
+    bool mbTimerOn = false;
+    bool mbTimeout = false;
+    int miColorInterval = 100;
+    int miFontSizeInterval = 4;
     qreal mfColorIntervalJump = 0;
-    QString msSettingsPath;
+    QString msSettingsPath = QApplication::applicationDirPath() + "/config.ini";
 };
 
 #endif // MAINDIALOG_H

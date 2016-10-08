@@ -7,9 +7,10 @@ MainFrame{
 
 QLabel#timeLabel {font-family: "Ubuntu Mono";}
 
-QLabel[ColorInterval="0"]{ color: #00C010; }
-QLabel[ColorInterval="1"]{ color: #26C010; }
-QLabel[ColorInterval="2"]{ color: #4CC010; }
+QLabel[ColorInterval="100"]{ color: #00C010; }
+QLabel[ColorInterval="25"]{ color: #C07210; }
+QLabel[ColorInterval="10"]{ color: #C00010; }
+/**
 QLabel[ColorInterval="3"]{ color: #72C010; }
 QLabel[ColorInterval="4"]{ color: #98C010; }
 QLabel[ColorInterval="5"]{ color: #C09810; }
@@ -17,7 +18,7 @@ QLabel[ColorInterval="6"]{ color: #C07210; }
 QLabel[ColorInterval="7"]{ color: #C04C10; }
 QLabel[ColorInterval="8"]{ color: #C02610; }
 QLabel[ColorInterval="9"]{ color: #C00010; }
-
+**/
 QLabel[FontSize="0"]{ font-size: 40pt; }
 QLabel[FontSize="1"]{ font-size: 60pt; }
 QLabel[FontSize="2"]{ font-size: 80pt; }

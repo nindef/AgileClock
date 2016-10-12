@@ -34,7 +34,7 @@ MainDialog::MainDialog(QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowOpacity(0.8);
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-
+    setAttribute(Qt::WA_DeleteOnClose);
 
     QGridLayout *lpGlobalLay = new QGridLayout;
     lpGlobalLay->setContentsMargins(0,0,0,0);
@@ -115,6 +115,13 @@ void MainDialog::mouseDoubleClickEvent(QMouseEvent * event)
     emit signalResetClock(false);
     mbTimerOn = false;
 }
+
+
+
+
+
+
+
 
 
 
@@ -229,6 +236,12 @@ void MainFrame::secLess()
     if(secs < 0 || secs > 59)
     {
         mins += ((mbTimeout)? 1 : - 1);
+        if(mins > 99)
+        {
+            resetClock(false);
+            return;
+        }
+
         if (mins < 0)
         {
             mins = 0;

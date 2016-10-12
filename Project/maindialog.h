@@ -37,21 +37,6 @@ private:
     QString msSettingsPath;
 };
 
-
-class MainWindow : public QMainWindow
-{
-    Q_OBJECT
-
-public:
-    MainWindow(QWidget *parent = 0):QMainWindow(parent)
-    {
-        MainDialog* mainDlg = new MainDialog(this);
-        mainDlg->setAttribute(Qt::WA_DeleteOnClose);
-        mainDlg->show();
-    }
-    ~MainWindow() {}
-};
-
 class MainFrame : public QFrame
 {
     Q_OBJECT

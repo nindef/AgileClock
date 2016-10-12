@@ -1,22 +1,22 @@
 
 MainFrame{
     background: #F3F3F3;
-    border: 2px solid #DDDDDD;
+    border: 3px solid #BABABA;
     border-radius: 10px;
 }
 
 QLabel#timeLabel {font-family: "Ubuntu Mono";}
 
-QLabel[ColorInterval="0"]{ color: #00C010; }
-QLabel[ColorInterval="1"]{ color: #26C010; }
-QLabel[ColorInterval="2"]{ color: #4CC010; }
-QLabel[ColorInterval="3"]{ color: #72C010; }
-QLabel[ColorInterval="4"]{ color: #98C010; }
-QLabel[ColorInterval="5"]{ color: #C09810; }
-QLabel[ColorInterval="6"]{ color: #C07210; }
-QLabel[ColorInterval="7"]{ color: #C04C10; }
-QLabel[ColorInterval="8"]{ color: #C02610; }
-QLabel[ColorInterval="9"]{ color: #C00010; }
+QLabel[ColorInterval="0"]{ color: #00E800; }
+QLabel[ColorInterval="1"]{ color: #23E800; }
+QLabel[ColorInterval="2"]{ color: #63E800; }
+QLabel[ColorInterval="3"]{ color: #96E800; }
+QLabel[ColorInterval="4"]{ color: #D7E800; }
+QLabel[ColorInterval="5"]{ color: #F3FC49; }
+QLabel[ColorInterval="6"]{ color: #F3D74D; }
+QLabel[ColorInterval="7"]{ color: #F3B44F; }
+QLabel[ColorInterval="8"]{ color: #F37A51; }
+QLabel[ColorInterval="9"]{ color: #E80000; }
 
 QLabel[FontSize="0"]{ font-size: 40pt; }
 QLabel[FontSize="1"]{ font-size: 60pt; }

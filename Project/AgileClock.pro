@@ -22,6 +22,4 @@ HEADERS  += \
 RESOURCES += \
     resources.qrc
 
-DISTFILES +=
-
-RC_ICONS = appicon.ico
+win32:RC_ICONS += appicon.ico

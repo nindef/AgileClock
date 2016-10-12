@@ -15,16 +15,10 @@ int main(int argc, char *argv[])
     QString StyleSheet = QLatin1String(cssfile.readAll());
     a.setStyleSheet(StyleSheet);
 
-//    int liFontIndex = QFontDatabase::addApplicationFont(":/fonts/resources/DS-DIGI.TTF");
-    int liFontIndex = QFontDatabase::addApplicationFont(":/fonts/resources/UbuntuMono-B.ttf");
-    QStringList families = QFontDatabase::applicationFontFamilies(liFontIndex);
-    foreach (QString family, families)
-        qDebug() << family;
+    QFontDatabase::addApplicationFont(":/fonts/resources/UbuntuMono-B.ttf");
 
-//    liFontIndex = QFontDatabase::addApplicationFont(":/fonts/resources/DS-DIGIB.TTF");
-
-
-    MainWindow w;
+    MainDialog *dlg = new MainDialog;
+    dlg->show();
 
     return a.exec();
 }

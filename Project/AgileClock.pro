@@ -14,10 +14,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    maindialog.cpp
+    maindialog.cpp \
+    mainframe.cpp
 
 HEADERS  += \
-    maindialog.h
+    maindialog.h \
+    mainframe.h
 
 RESOURCES += \
     resources.qrc

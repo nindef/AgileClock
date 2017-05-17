@@ -86,6 +86,9 @@ MainFrame::MainFrame(QWidget* parent):QFrame(parent)
     connect(mpTimer, SIGNAL(timeout()), this, SLOT(secLess()));
 
     setLayout(lpGlobalHLay);
+
+    mpLessThan3Secs = new QSound (":/sounds/resources/Metronome.wav");
+    mp0Secs = new QSound (":/sounds/resources/Temple_Bell_Small-Mike_Koenig.wav");
 }
 
 MainFrame::~MainFrame()
@@ -148,8 +151,8 @@ void MainFrame::secLess()
     mpMinutes->setText(QString::number (mins).rightJustified(2,QChar('0')));
     mpSeconds->setText(QString::number (secs).rightJustified(2,QChar('0')));
 
-    if(mins == 0 && secs == 4 && !mbTimeout) QSound::play(":/sounds/resources/Metronome.wav");
-    else if (mins == 0 && secs == 0) QSound::play(":/sounds/resources/AirHorn-mike_koenig.wav");
+    if(mins == 0 && secs == 3 && !mbTimeout) mpLessThan3Secs->play();
+    else if (mins == 0 && secs == 0) mp0Secs->play();
 
     if(miColorInterval < 9)
     {
@@ -226,6 +229,9 @@ void MainFrame::wheelEvent(QWheelEvent * event)
 
 void MainFrame::resetClock(bool lbTimerActive)
 {
+    mpLessThan3Secs->stop();
+    mp0Secs->stop();
+
     mpMinutes->setText(QString::number (miMinutes).rightJustified(2,QChar('0')));
     mpSeconds->setText(QString::number (miSeconds).rightJustified(2,QChar('0')));
 

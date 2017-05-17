@@ -8,6 +8,8 @@
 #include <QApplication>
 #include <QSettings>
 
+class QSound;
+
 class MainFrame : public QFrame
 {
     Q_OBJECT
@@ -48,6 +50,7 @@ private:
     int miFontSizeInterval = 4;
     qreal mfColorIntervalJump = 0;
     QString msSettingsPath = QApplication::applicationDirPath() + "/config.ini";
+    QSound *mpLessThan3Secs = Q_NULLPTR, *mp0Secs = Q_NULLPTR;
 };
 
 #endif // MAINFRAME_H

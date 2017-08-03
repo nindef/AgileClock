@@ -1,5 +1,4 @@
 #include "maindialog.h"
-
 #include <QFont>
 #include <QPainter>
 #include <QImage>
@@ -8,10 +7,9 @@
 #include <QBrush>
 #include <QDesktopWidget>
 #include <QGridLayout>
-
-#include <stdio.h>
-
 #include <QDebug>
+#include <QSettings>
+#include <QApplication>
 
 MainDialog::MainDialog(QWidget *parent)
     : QDialog(parent)
@@ -21,17 +19,19 @@ MainDialog::MainDialog(QWidget *parent)
     setWindowOpacity(0.8);
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
-    QGridLayout *lpGlobalLay = new QGridLayout;
+
+    auto lpGlobalLay = new QGridLayout;
     lpGlobalLay->setContentsMargins(0,0,0,0);
     lpGlobalLay->setSpacing(0);
 
-    QPushButton *lpCloseButton = new QPushButton(this); lpCloseButton->setContentsMargins(0,0,0,0);
+    auto lpCloseButton = new QPushButton(this);
+    lpCloseButton->setContentsMargins(0,0,0,0);
     lpCloseButton->setIcon(QIcon (QPixmap(":/images/resources/img_close.png")));
     lpCloseButton->setFlat(true);
     lpCloseButton->setObjectName("closeButton");
     connect (lpCloseButton, SIGNAL(clicked(bool)), this, SLOT(close()));
 
-    MainFrame *lpMainFrame = new MainFrame(this);
+    auto lpMainFrame = new MainFrame(this);
     connect (this, SIGNAL(signalResetClock(bool)), lpMainFrame, SLOT(resetClock(bool)));
 
     lpGlobalLay->setRowStretch(0,1);
@@ -49,7 +49,7 @@ MainDialog::MainDialog(QWidget *parent)
 MainDialog::~MainDialog()
 {
     //save current settings
-    QRect geom = geometry();
+    auto geom = geometry();
 
     QSettings settings(msSettingsPath, QSettings::IniFormat);
     settings.setValue("lastPos", geom.topLeft());
@@ -59,9 +59,10 @@ void MainDialog::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
 
-    QPoint center = QApplication::desktop()->screen()->rect().center() - rect().center();
+    auto center = QApplication::desktop()->screen()->rect().center() - rect().center();
     QSettings settings(msSettingsPath, QSettings::IniFormat);
-    QPoint lastPos = settings.value("lastPos", center).toPoint();
+    auto lastPos = settings.value("lastPos", center).toPoint();
+
     move(lastPos);
 }
 
@@ -72,35 +73,40 @@ void MainDialog::mousePressEvent(QMouseEvent * event)
         oldPosition= event->pos();
         acumDespl = QPoint(0,0);
     }
+
     mbTimerOn = true;
 }
 
 void MainDialog::mouseMoveEvent(QMouseEvent * event)
 {
-    if(event->buttons() != Qt::LeftButton) return;
+    if (event->button() == Qt::LeftButton)
+    {
+        auto position = event->pos();
+        auto despl = position - oldPosition;
 
-    QPoint position = event->pos();
-    QPoint despl = position - oldPosition;
-
-    move(pos () + despl);
-    acumDespl += despl;
+        move(pos () + despl);
+        acumDespl += despl;
+    }
 }
 
 void MainDialog::mouseReleaseEvent(QMouseEvent * event)
 {
-    if(event->button() != Qt::LeftButton) return;
-    if(acumDespl.manhattanLength() < 3 && mbTimerOn)
+    if (event->button() == Qt::LeftButton)
     {
+        if (acumDespl.manhattanLength() < 3 && mbTimerOn)
         emit signalResetClock(true);
+
+        mbTimerOn = false;
     }
-    mbTimerOn = false;
 }
 
 void MainDialog::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    if(event->button() != Qt::LeftButton) return;
-    emit signalResetClock(false);
-    mbTimerOn = false;
+    if (event->button() == Qt::LeftButton)
+    {
+        emit signalResetClock(false);
+        mbTimerOn = false;
+    }
 }
 
 

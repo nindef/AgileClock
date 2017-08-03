@@ -12,12 +12,13 @@ int main(int argc, char *argv[])
 
     QFile cssfile(":/styles/resources/style01.css");
     cssfile.open(QFile::ReadOnly);
-    QString StyleSheet = QLatin1String(cssfile.readAll());
+
+    auto StyleSheet = QLatin1String(cssfile.readAll());
     a.setStyleSheet(StyleSheet);
 
     QFontDatabase::addApplicationFont(":/fonts/resources/UbuntuMono-B.ttf");
 
-    MainDialog *dlg = new MainDialog;
+    auto dlg = new MainDialog;
     dlg->show();
 
     return a.exec();

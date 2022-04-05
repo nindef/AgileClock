@@ -1,8 +1,9 @@
 #include "mainframe.h"
 #include <QHBoxLayout>
 #include <QGraphicsDropShadowEffect>
-#include <QSound>
+#include <QSoundEffect>
 #include <QStyle>
+#include <QFile>
 #include <QTimer>
 #include <QLabel>
 #include <QWheelEvent>
@@ -93,8 +94,10 @@ MainFrame::MainFrame(QWidget* parent):QFrame(parent)
 
     setLayout(lpGlobalHLay);
 
-    mpLessThan3Secs = new QSound (":/sounds/resources/Metronome.wav");
-    mp0Secs = new QSound (":/sounds/resources/Temple_Bell_Small-Mike_Koenig.wav");
+    mpLessThan3Secs = new QSoundEffect;
+    mpLessThan3Secs->setSource(QUrl::fromLocalFile(":/sounds/Metronome"));
+    mp0Secs = new QSoundEffect;
+    mp0Secs->setSource(QUrl::fromLocalFile(":/sounds/Bell"));
 }
 
 MainFrame::~MainFrame()
@@ -186,17 +189,17 @@ void MainFrame::wheelEvent(QWheelEvent * event)
         if (mpTimer->isActive())
             resetClock(false);
 
-        if (mpMinFrame->geometry().contains(event->pos()))
+        if (mpMinFrame->geometry().contains(event->position().toPoint()))
         {
             auto mins = mpMinutes->text ().toInt();
-            miMinutes = event->delta() < 0 ? static_cast<int>(qMax(--mins,0)) : static_cast<int>(qMin(++mins,99));
+            miMinutes = event->angleDelta().y() < 0 ? static_cast<int>(qMax(--mins,0)) : static_cast<int>(qMin(++mins,99));
             mpMinutes->setText(QString::number (miMinutes).rightJustified(2,QChar('0')));
         }
-        else if (mpSecFrame->geometry().contains(event->pos()))
+        else if (mpSecFrame->geometry().contains(event->position().toPoint()))
         {
             auto secs = mpSeconds->text ().toInt();
 
-            if (event->delta() < 0)
+            if (event->angleDelta().y() < 0)
             {
                 secs -= 1;
 
@@ -216,7 +219,7 @@ void MainFrame::wheelEvent(QWheelEvent * event)
     }
     else
     {
-        if (event->delta() < 0)
+        if (event->angleDelta().y() < 0)
         {
             //mes petita
             miFontSizeInterval--;

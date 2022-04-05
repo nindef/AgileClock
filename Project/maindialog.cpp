@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QPalette>
 #include <QBrush>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QGridLayout>
 #include <QDebug>
 #include <QSettings>
@@ -26,7 +26,7 @@ MainDialog::MainDialog(QWidget *parent)
 
     auto lpCloseButton = new QPushButton(this);
     lpCloseButton->setContentsMargins(0,0,0,0);
-    lpCloseButton->setIcon(QIcon (QPixmap(":/images/resources/img_close.png")));
+    lpCloseButton->setIcon(QIcon (QPixmap(":/images/img_close")));
     lpCloseButton->setFlat(true);
     lpCloseButton->setObjectName("closeButton");
     connect (lpCloseButton, SIGNAL(clicked(bool)), this, SLOT(close()));
@@ -44,6 +44,8 @@ MainDialog::MainDialog(QWidget *parent)
     setLayout(lpGlobalLay);
 
     msSettingsPath = QApplication::applicationDirPath() + "/config.ini";
+
+    setMouseTracking(true);
 }
 
 MainDialog::~MainDialog()
@@ -59,7 +61,7 @@ void MainDialog::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
 
-    auto center = QApplication::desktop()->screen()->rect().center() - rect().center();
+    auto center = this->screen()->availableGeometry().center() - rect().center();
     QSettings settings(msSettingsPath, QSettings::IniFormat);
     auto lastPos = settings.value("lastPos", center).toPoint();
 
@@ -68,7 +70,7 @@ void MainDialog::showEvent(QShowEvent *event)
 
 void MainDialog::mousePressEvent(QMouseEvent * event)
 {
-    if(event->button() == Qt::LeftButton)
+    if(event->buttons() & Qt::LeftButton)
     {
         oldPosition= event->pos();
         acumDespl = QPoint(0,0);
@@ -79,7 +81,7 @@ void MainDialog::mousePressEvent(QMouseEvent * event)
 
 void MainDialog::mouseMoveEvent(QMouseEvent * event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (event->buttons() & Qt::LeftButton)
     {
         auto position = event->pos();
         auto despl = position - oldPosition;
@@ -91,7 +93,7 @@ void MainDialog::mouseMoveEvent(QMouseEvent * event)
 
 void MainDialog::mouseReleaseEvent(QMouseEvent * event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (event->buttons() & Qt::LeftButton)
     {
         if (acumDespl.manhattanLength() < 3 && mbTimerOn)
         emit signalResetClock(true);

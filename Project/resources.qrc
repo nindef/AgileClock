@@ -1,15 +1,15 @@
 <RCC>
     <qresource prefix="/styles">
-        <file>resources/style01.css</file>
+        <file alias="style01">resources/style01.css</file>
     </qresource>
     <qresource prefix="/images">
-        <file>resources/img_close.png</file>
+        <file alias="img_close">resources/img_close.png</file>
     </qresource>
     <qresource prefix="/fonts">
-        <file>resources/UbuntuMono-B.ttf</file>
+        <file alias="UbuntuFont">resources/UbuntuMono-B.ttf</file>
     </qresource>
     <qresource prefix="/sounds">
-        <file>resources/Metronome.wav</file>
-        <file>resources/Temple_Bell_Small-Mike_Koenig.wav</file>
+        <file alias="Metronome">resources/Metronome.wav</file>
+        <file alias="Bell">resources/Temple_Bell_Small-Mike_Koenig.wav</file>
     </qresource>
 </RCC>

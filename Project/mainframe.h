@@ -5,7 +5,7 @@
 
 class QLabel;
 class QTimer;
-class QSound;
+class QSoundEffect;
 
 class MainFrame : public QFrame
 {
@@ -40,8 +40,8 @@ class MainFrame : public QFrame
         int miFontSizeInterval = 4;
         qreal mfColorIntervalJump = 0;
         QString msSettingsPath;
-        QSound *mpLessThan3Secs = Q_NULLPTR;
-        QSound *mp0Secs = Q_NULLPTR;
+        QSoundEffect *mpLessThan3Secs = Q_NULLPTR;
+        QSoundEffect *mp0Secs = Q_NULLPTR;
 
         void loadSettings();
         void saveSettings();

@@ -54,5 +54,8 @@ class MainFrame : public QFrame
 
     private slots:
         void secLess();
+
+signals:
+        void fontColorChanged (QColor newColor);
 };
 

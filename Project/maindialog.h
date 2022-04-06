@@ -39,6 +39,8 @@ class MainDialog : public QDialog
         QWidget* getButtonContainerAligned (QLayout* buttonLayout);
         void setButtonsVisible (bool areVisible = true);
 
+        void onFontColorChanged(QColor newColor);
+
     signals:
         void signalResetClock(bool);
         void minutesEdited (bool plusOne);

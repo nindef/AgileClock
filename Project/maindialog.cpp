@@ -88,6 +88,7 @@ QLayout *MainDialog::buildLayout()
     auto lpMainFrame = new MainFrame;
     connect (this, &MainDialog::signalResetClock, lpMainFrame, &MainFrame::resetClock);
     connect (this, &MainDialog::fontSizeChanged, lpMainFrame, &MainFrame::onFontSizeChanged, Qt::DirectConnection);
+    connect (lpMainFrame, &MainFrame::fontColorChanged, this, &MainDialog::onFontColorChanged);
 
     lpMainFrame->installEventFilter(this);
 
@@ -120,6 +121,23 @@ QWidget *MainDialog::getButtonContainerAligned(QLayout *buttonLayout)
 void MainDialog::setButtonsVisible(bool areVisible)
 {
     mCloseButton->setVisible(areVisible);
+}
+
+void MainDialog::onFontColorChanged(QColor newColor)
+{
+    const auto backgroundColor = QString (
+                "MainFrame {"
+                "background: qlineargradient(x1:0, y1:0, x2:0, y2:1, "
+                "                            stop:0 rgba(20, 20, 20, 100), "
+                "                            stop: 0.4 rgba(20, 20, 20, 40), "
+                "                            stop:1 rgba(%1, %2, %3, 150));"
+                "border: 0px;"
+                "border-radius: 5px;"
+                "}")
+            .arg (newColor.red())
+            .arg (newColor.green())
+            .arg (newColor.blue());
+    setStyleSheet (backgroundColor);
 }
 
 void MainDialog::mousePressEvent(QMouseEvent * event)

@@ -139,7 +139,10 @@ void MainFrame::updateFontColor()
     updateWidgetStyle (mpSeconds);
     updateWidgetStyle (mpSeparator);
 
-    qDebug () << mpMinutes->palette().brush(QPalette::ColorRole::Text).color();
+    if (miColorInterval > 6)
+        fontColorChanged (mpMinutes->palette().brush(QPalette::ColorRole::Text).color());
+    else if (miColorInterval == 0)
+        fontColorChanged(QColor(Qt::white));
 }
 
 

@@ -24,26 +24,10 @@ MainFrame::MainFrame(QWidget* parent):QFrame(parent)
 
     loadSettings();
 
-    auto minEffect = new QGraphicsDropShadowEffect (this);
-    minEffect->setOffset(QPoint(0,0));
-    minEffect->setColor (QColor (0, 0, 0, 255));
-    minEffect->setBlurRadius (16);
-
-    auto secEffect = new QGraphicsDropShadowEffect (this);
-    secEffect->setOffset(QPoint(0,0));
-    secEffect->setColor (QColor (0, 0, 0, 255));
-    secEffect->setBlurRadius (16);
-
-    auto sepEffect = new QGraphicsDropShadowEffect (this);
-    sepEffect->setOffset(QPoint(0,0));
-    sepEffect->setColor (QColor (0, 0, 0, 255));
-    sepEffect->setBlurRadius (16);
-
     mpMinutes = new QLabel(this);
     mpMinutes->setContentsMargins(0,0,0,0);
     mpMinutes->setText(QString::number (miMinutes).rightJustified(2,QChar('0')));
     mpMinutes->setObjectName("timeLabel");
-    mpMinutes->setGraphicsEffect (minEffect);
     mpMinutes->setProperty("ColorInterval", miColorInterval);
     mpMinutes->setProperty("FontSize", miFontSizeInterval);
 
@@ -51,7 +35,6 @@ MainFrame::MainFrame(QWidget* parent):QFrame(parent)
     mpSeconds->setContentsMargins(0,0,0,0);
     mpSeconds->setText(QString::number (miSeconds).rightJustified(2,QChar('0')));
     mpSeconds->setObjectName("timeLabel");
-    mpSeconds->setGraphicsEffect (secEffect);
     mpSeconds->setProperty("ColorInterval", miColorInterval);
     mpSeconds->setProperty("FontSize", miFontSizeInterval);
 
@@ -76,9 +59,12 @@ MainFrame::MainFrame(QWidget* parent):QFrame(parent)
     mpSeparator = new QLabel(":",this);
     mpSeparator->setContentsMargins(0,0,0,0);
     mpSeparator->setObjectName("timeLabel");
-    mpSeparator->setGraphicsEffect (sepEffect);
     mpSeparator->setProperty("ColorInterval", miColorInterval);
     mpSeparator->setProperty("FontSize", miFontSizeInterval);
+
+    addDropShadowEffect (mpMinutes);
+    addDropShadowEffect (mpSeconds);
+    addDropShadowEffect (mpSeparator);
 
     auto lpGlobalHLay = new QHBoxLayout;
     lpGlobalHLay->setContentsMargins(0,0,0,0);
@@ -89,6 +75,7 @@ MainFrame::MainFrame(QWidget* parent):QFrame(parent)
 
     mpTimer = new QTimer(this);
     mpTimer->setInterval(1000);
+    mpTimer->setTimerType(Qt::TimerType::PreciseTimer);
 
     connect(mpTimer, SIGNAL(timeout()), this, SLOT(secLess()));
 
@@ -128,6 +115,31 @@ void MainFrame::saveSettings()
     settings.setValue("minutes", miMinutes);
     settings.setValue("seconds", miSeconds);
     settings.setValue("sizefont", miFontSizeInterval);
+}
+
+void MainFrame::addDropShadowEffect(QWidget * widget)
+{
+    if (widget != nullptr)
+    {
+        const auto effect = new QGraphicsDropShadowEffect (this);
+        effect->setOffset(QPoint(0,0));
+        effect->setColor (QColor (0, 0, 0, 255));
+        effect->setBlurRadius (16);
+        widget->setGraphicsEffect (effect);
+    }
+}
+
+void MainFrame::updateFontColor()
+{
+    mpMinutes->setProperty("ColorInterval", miColorInterval);
+    mpSeconds->setProperty("ColorInterval", miColorInterval);
+    mpSeparator->setProperty("ColorInterval", miColorInterval);
+
+    updateWidgetStyle (mpMinutes);
+    updateWidgetStyle (mpSeconds);
+    updateWidgetStyle (mpSeparator);
+
+    qDebug () << mpMinutes->palette().brush(QPalette::ColorRole::Text).color();
 }
 
 
@@ -170,15 +182,7 @@ void MainFrame::secLess()
         miColorInterval = (miMinutes * 60 - mins * 60 + miSeconds - secs) / mfColorIntervalJump;
 
         if (liOldInterval != miColorInterval)
-        {
-            mpMinutes->setProperty("ColorInterval", miColorInterval);
-            mpSeconds->setProperty("ColorInterval", miColorInterval);
-            mpSeparator->setProperty("ColorInterval", miColorInterval);
-
-            updateWidgetStyle (mpMinutes);
-            updateWidgetStyle (mpSeconds);
-            updateWidgetStyle (mpSeparator);
-        }
+            updateFontColor ();
     }
 }
 
@@ -221,7 +225,7 @@ void MainFrame::wheelEvent(QWheelEvent * event)
     {
         if (event->angleDelta().y() < 0)
         {
-            //mes petita
+            //smaller font
             miFontSizeInterval--;
 
             if (miFontSizeInterval < 0)
@@ -229,7 +233,7 @@ void MainFrame::wheelEvent(QWheelEvent * event)
         }
         else
         {
-            //mes gran
+            //larger font
             miFontSizeInterval++;
 
             if (miFontSizeInterval > 8)
@@ -246,6 +250,12 @@ void MainFrame::wheelEvent(QWheelEvent * event)
     }
 }
 
+bool MainFrame::eventFilter(QObject *obj, QEvent *event)
+{
+    qDebug () << event->type();
+    return QFrame::eventFilter(obj, event);
+}
+
 void MainFrame::resetClock(bool lbTimerActive)
 {
     mpLessThan3Secs->stop();
@@ -257,13 +267,7 @@ void MainFrame::resetClock(bool lbTimerActive)
     mfColorIntervalJump = static_cast<qreal>((miMinutes * 60 + miSeconds) / 10.0);
     miColorInterval = 0;
 
-    mpMinutes->setProperty("ColorInterval", miColorInterval);
-    mpSeconds->setProperty("ColorInterval", miColorInterval);
-    mpSeparator->setProperty("ColorInterval", miColorInterval);
-
-    updateWidgetStyle (mpMinutes);
-    updateWidgetStyle (mpSeconds);
-    updateWidgetStyle (mpSeparator);
+    updateFontColor ();
 
     mbTimeout = false;
 
@@ -273,4 +277,32 @@ void MainFrame::resetClock(bool lbTimerActive)
         mpTimer->stop();
 
     mbTimerOn = lbTimerActive;
+}
+
+void MainFrame::onMinutesEdited(bool plusOne)
+{
+    if (mpTimer->isActive())
+        resetClock(false);
+
+    auto mins = mpMinutes->text ().toInt();
+    miMinutes = plusOne ? static_cast<int>(qMin(++mins,99)) : static_cast<int>(qMax(--mins,0));
+    mpMinutes->setText(QString::number (miMinutes).rightJustified(2,QChar('0')));
+}
+
+void MainFrame::onFontSizeChanged(bool isLargerSize)
+{
+    if (isLargerSize)
+        miFontSizeInterval = std::min(miFontSizeInterval+1, 8);
+    else
+        miFontSizeInterval = std::max(miFontSizeInterval-1, 0);
+
+    mpMinutes->setProperty("FontSize", miFontSizeInterval);
+    mpSeconds->setProperty("FontSize", miFontSizeInterval);
+    mpSeparator->setProperty("FontSize", miFontSizeInterval);
+
+    updateWidgetStyle (mpMinutes);
+    updateWidgetStyle (mpSeconds);
+    updateWidgetStyle (mpSeparator);
+
+    adjustSize();
 }

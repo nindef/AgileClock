@@ -1,8 +1,14 @@
 
 MainFrame{
-    background: #F3F3F3;
-    border: 3px solid #BABABA;
-    border-radius: 10px;
+/*    background: qconicalgradient(cx:0.5, cy:0.5, angle: 45,
+                                 stop:0 rgba(180, 180, 180, 150),
+                                 stop:0.25 rgba(20, 20, 20, 80),
+                                 stop:0.5 rgba(20, 20, 20, 120),
+                                 stop:0.75 rgba(20, 20, 20, 80),
+                                 stop:1 rgba(180, 180, 180, 150));*/
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(20, 20, 20, 100), stop: 0.4 rgba(20, 20, 20, 40), stop:1 rgba(180, 180, 180, 200));
+    border: 0px;
+    border-radius: 5px;
 }
 
 QLabel#timeLabel {font-family: "Ubuntu Mono";}
@@ -28,10 +34,3 @@ QLabel[FontSize="6"]{ font-size: 160pt; }
 QLabel[FontSize="7"]{ font-size: 180pt; }
 QLabel[FontSize="8"]{ font-size: 200pt; }
 
-QPushButton#closeButton{
-    background: #DDDDDD;
-    padding: 5px;
-    border: 1px solid #DDDDDD;
-    border-top-left-radius:5px;
-    border-top-right-radius:5px;
-}

@@ -1,5 +1,4 @@
-#ifndef MAINFRAME_H
-#define MAINFRAME_H
+#pragma once
 
 #include <QFrame>
 
@@ -17,9 +16,12 @@ class MainFrame : public QFrame
 
     public slots:
         void resetClock(bool lbTimerActive);
+        void onMinutesEdited (bool plusOne);
+        void onFontSizeChanged (bool isLargerSize);
 
     protected:
-        void wheelEvent(QWheelEvent * event);
+        void wheelEvent(QWheelEvent * event) override;
+        bool eventFilter(QObject *obj, QEvent *event) override;
 
     private:
         static const int Alert = 10;
@@ -46,8 +48,11 @@ class MainFrame : public QFrame
         void loadSettings();
         void saveSettings();
 
+        void addDropShadowEffect(QWidget * widget);
+
+        void updateFontColor();
+
     private slots:
         void secLess();
 };
 
-#endif // MAINFRAME_H

@@ -10,6 +10,9 @@
 #include <QDebug>
 #include <QSettings>
 #include <QApplication>
+#include <QStackedLayout>
+#include <QLabel>
+#include <QTimer>
 
 MainDialog::MainDialog(QWidget *parent)
     : QDialog(parent)
@@ -20,32 +23,16 @@ MainDialog::MainDialog(QWidget *parent)
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
-    auto lpGlobalLay = new QGridLayout;
-    lpGlobalLay->setContentsMargins(0,0,0,0);
-    lpGlobalLay->setSpacing(0);
-
-    auto lpCloseButton = new QPushButton(this);
-    lpCloseButton->setContentsMargins(0,0,0,0);
-    lpCloseButton->setIcon(QIcon (QPixmap(":/images/img_close")));
-    lpCloseButton->setFlat(true);
-    lpCloseButton->setObjectName("closeButton");
-    connect (lpCloseButton, SIGNAL(clicked(bool)), this, SLOT(close()));
-
-    auto lpMainFrame = new MainFrame(this);
-    connect (this, SIGNAL(signalResetClock(bool)), lpMainFrame, SLOT(resetClock(bool)));
-
-    lpGlobalLay->setRowStretch(0,1);
-    lpGlobalLay->setRowStretch(3,1);
-    lpGlobalLay->setColumnStretch(0,1);
-    lpGlobalLay->setColumnStretch(2,1);
-    lpGlobalLay->addWidget(lpCloseButton,1,1,1,1,Qt::AlignCenter);
-    lpGlobalLay->addWidget(lpMainFrame,2,1,1,1,Qt::AlignRight);
-
-    setLayout(lpGlobalLay);
-
     msSettingsPath = QApplication::applicationDirPath() + "/config.ini";
 
+    mHideButtonsTimer = new QTimer(this);
+    mHideButtonsTimer->setSingleShot(true);
+    mHideButtonsTimer->setInterval(1000);
+    connect (mHideButtonsTimer, &QTimer::timeout, [this]() { setButtonsVisible (false); });
+
     setMouseTracking(true);
+
+    setLayout(buildLayout ());
 }
 
 MainDialog::~MainDialog()
@@ -57,10 +44,8 @@ MainDialog::~MainDialog()
     settings.setValue("lastPos", geom.topLeft());
 }
 
-void MainDialog::showEvent(QShowEvent *event)
+void MainDialog::showEvent([[maybe_unused]] QShowEvent *event)
 {
-    Q_UNUSED(event)
-
     auto center = this->screen()->availableGeometry().center() - rect().center();
     QSettings settings(msSettingsPath, QSettings::IniFormat);
     auto lastPos = settings.value("lastPos", center).toPoint();
@@ -68,13 +53,79 @@ void MainDialog::showEvent(QShowEvent *event)
     move(lastPos);
 }
 
+void MainDialog::enterEvent([[maybe_unused]] QEnterEvent *event)
+{
+    mHideButtonsTimer->stop ();
+    setButtonsVisible(true);
+}
+
+void MainDialog::leaveEvent([[maybe_unused]] QEvent *event)
+{
+    mHideButtonsTimer->start ();
+}
+
+bool MainDialog::eventFilter(QObject *object, QEvent *event)
+{
+    if (event->type() == QEvent::Resize)
+    {
+        adjustSize();
+        return true;
+    }
+    return QDialog::eventFilter(object, event);
+}
+
+QLayout *MainDialog::buildLayout()
+{
+    const auto layout = new QHBoxLayout;
+    layout->setContentsMargins(0,0,0,0);
+    layout->setSpacing(0);
+    layout->setAlignment(Qt::AlignCenter);
+
+    mCloseButton = new QLabel (this);
+    mCloseButton->setContentsMargins(0,0,0,0);
+    mCloseButton->setPixmap (QIcon (":/images/img_close").pixmap(QSize(20,20)));
+
+    auto lpMainFrame = new MainFrame;
+    connect (this, &MainDialog::signalResetClock, lpMainFrame, &MainFrame::resetClock);
+    connect (this, &MainDialog::fontSizeChanged, lpMainFrame, &MainFrame::onFontSizeChanged, Qt::DirectConnection);
+
+    lpMainFrame->installEventFilter(this);
+
+    layout->addWidget(lpMainFrame);
+    layout->setAlignment(lpMainFrame, Qt::AlignCenter);
+
+    return layout;
+}
+
+QWidget *MainDialog::getButtonContainerAligned(QWidget* button, Qt::Alignment alignment)
+{
+    const auto buttonLayout = new QHBoxLayout;
+    buttonLayout->setContentsMargins(0,0,0,0);
+    buttonLayout->setSpacing(0);
+    buttonLayout->setAlignment(alignment);
+    buttonLayout->addWidget(button);
+
+    return getButtonContainerAligned (buttonLayout);
+}
+
+QWidget *MainDialog::getButtonContainerAligned(QLayout *buttonLayout)
+{
+    const auto buttonContainer = new QWidget;
+    buttonContainer->setContentsMargins(0,0,0,0);
+    buttonContainer->setLayout(buttonLayout);
+
+    return buttonContainer;
+}
+
+void MainDialog::setButtonsVisible(bool areVisible)
+{
+    mCloseButton->setVisible(areVisible);
+}
+
 void MainDialog::mousePressEvent(QMouseEvent * event)
 {
     if(event->buttons() & Qt::LeftButton)
-    {
-        oldPosition= event->pos();
-        acumDespl = QPoint(0,0);
-    }
+        oldPosition = event->pos();
 
     mbTimerOn = true;
 }
@@ -93,12 +144,17 @@ void MainDialog::mouseMoveEvent(QMouseEvent * event)
 
 void MainDialog::mouseReleaseEvent(QMouseEvent * event)
 {
-    if (event->buttons() & Qt::LeftButton)
+    if (event->button() == Qt::LeftButton)
     {
-        if (acumDespl.manhattanLength() < 3 && mbTimerOn)
-        emit signalResetClock(true);
+        const auto closePressed = mCloseButton->geometry().contains(event->pos ());
+
+        if (closePressed)
+            close ();
+        else if (acumDespl.manhattanLength() < 3 && mbTimerOn)
+            emit signalResetClock(true);
 
         mbTimerOn = false;
+        acumDespl = QPoint(0,0);
     }
 }
 
@@ -106,8 +162,13 @@ void MainDialog::mouseDoubleClickEvent(QMouseEvent * event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        emit signalResetClock(false);
-        mbTimerOn = false;
+        const auto closePressed = mCloseButton->geometry().contains(event->pos ());
+
+        if (!closePressed)
+        {
+            emit signalResetClock(false);
+            mbTimerOn = false;
+        }
     }
 }
 

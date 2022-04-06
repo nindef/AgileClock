@@ -1,5 +1,4 @@
-#ifndef MAINDIALOG_H
-#define MAINDIALOG_H
+#pragma once
 
 #include <QMainWindow>
 #include <QDialog>
@@ -18,19 +17,31 @@ class MainDialog : public QDialog
         ~MainDialog();
 
     protected:
-        void mousePressEvent(QMouseEvent * event);
-        void mouseMoveEvent(QMouseEvent * event);
-        void mouseReleaseEvent(QMouseEvent * event);
-        void mouseDoubleClickEvent(QMouseEvent * event);
-        void showEvent(QShowEvent *event);
+        void mousePressEvent(QMouseEvent * event) override;
+        void mouseMoveEvent(QMouseEvent * event) override;
+        void mouseReleaseEvent(QMouseEvent * event) override;
+        void mouseDoubleClickEvent(QMouseEvent * event) override;
+        void showEvent(QShowEvent *event) override;
+        void enterEvent (QEnterEvent *event) override;
+        void leaveEvent (QEvent *event) override;
+
+        bool eventFilter(QObject *object, QEvent *event) override;
 
     private:
+        QLabel * mCloseButton = nullptr;
+        QTimer * mHideButtonsTimer = nullptr;
         QPoint oldPosition, acumDespl;
         bool mbTimerOn = false;
         QString msSettingsPath;
 
+        QLayout* buildLayout ();
+        QWidget* getButtonContainerAligned (QWidget* button, Qt::Alignment alignment);
+        QWidget* getButtonContainerAligned (QLayout* buttonLayout);
+        void setButtonsVisible (bool areVisible = true);
+
     signals:
         void signalResetClock(bool);
+        void minutesEdited (bool plusOne);
+        void fontSizeChanged (bool isLargerSize);
 };
 
-#endif // MAINDIALOG_H

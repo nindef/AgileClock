@@ -3,7 +3,9 @@
         <file alias="style01">resources/style01.css</file>
     </qresource>
     <qresource prefix="/images">
-        <file alias="img_close">resources/img_close.png</file>
+        <file alias="img_add">resources/round_add_black_24dp.png</file>
+        <file alias="img_close">resources/round_close_black_24dp.png</file>
+        <file alias="img_substract">resources/round_remove_black_24dp.png</file>
     </qresource>
     <qresource prefix="/fonts">
         <file alias="UbuntuFont">resources/UbuntuMono-B.ttf</file>
